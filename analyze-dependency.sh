@@ -23,7 +23,7 @@ parse_tree_file() {
       match($0, / @ ([^ ]+) ---/, arr)
       module = arr[1]
       file = temp_dir "/" module ".tree"
-      print ">>> Writing " file
+      print ">>> Writing " file > "/dev/stderr"
       in_tree = 1
       next
     }
@@ -40,8 +40,6 @@ parse_tree_file() {
       print >> file
     }
   ' "$tree_file"
-  echo $tree_file
-  echo $temp_dir
 }
 
 parse_dependency_file() {
@@ -54,7 +52,7 @@ parse_dependency_file() {
       match($0, / @ ([^ ]+) ---/, arr)
       module = arr[1]
       file = temp_dir "/" module ".dependency"
-      print ">>> Writing " file
+      print ">>> Writing " file > "/dev/stderr"
       in_tree = 1
       next
     }
@@ -164,7 +162,7 @@ for f in ${TMP_DIR}/*.dependency; do
   base=$(basename "$f")
   echo
   echo ${base/.dependency/ module:}
-  enrich_dependencies ${f/.dependency/.tree} ${f}
+  enrich_dependencies "${f/.dependency/.tree}" "${f}"
 done
 
-rm -rf ${TMP_DIR}
+rm -rf "${TMP_DIR}"
